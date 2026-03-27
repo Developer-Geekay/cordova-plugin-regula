@@ -120,58 +120,60 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
     }
 
     private void matchFaces(JSONArray imagesJson, CallbackContext callbackContext) {
-        try {
-            List<MatchFacesImage> imageList = new ArrayList<>();
-            for (int i = 0; i < imagesJson.length(); i++) {
-                JSONObject imgObj = imagesJson.getJSONObject(i);
-                String base64 = imgObj.getString("base64");
-                int imageTypeInt = imgObj.optInt("imageType", 1); // default PRINTED=1
+        cordova.getThreadPool().execute(() -> {
+            try {
+                List<MatchFacesImage> imageList = new ArrayList<>();
+                for (int i = 0; i < imagesJson.length(); i++) {
+                    JSONObject imgObj = imagesJson.getJSONObject(i);
+                    String base64 = imgObj.getString("base64");
+                    int imageTypeInt = imgObj.optInt("imageType", 1); // default PRINTED=1
 
-                byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
-                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-                if (bitmap == null) {
-                    callbackContext.error("Failed to decode image at index " + i);
-                    return;
-                }
-
-                ImageType imageType = intToImageType(imageTypeInt);
-                imageList.add(new MatchFacesImage(bitmap, imageType, true));
-            }
-
-            MatchFacesRequest matchRequest = new MatchFacesRequest(imageList);
-
-            FaceSDK.Instance().matchFaces(cordova.getContext(), matchRequest, matchFacesResponse -> {
-                try {
-                    JSONObject result = new JSONObject();
-                    if (matchFacesResponse.getException() != null) {
-                        result.put("error", matchFacesResponse.getException().getMessage());
-                        callbackContext.success(result);
+                    byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                    if (bitmap == null) {
+                        callbackContext.error("Failed to decode image at index " + i);
                         return;
                     }
 
-                    MatchFacesSimilarityThresholdSplit split =
-                            new MatchFacesSimilarityThresholdSplit(matchFacesResponse.getResults(), 0.75d);
-
-                    Double similarity = null;
-                    if (!split.getMatchedFaces().isEmpty()) {
-                        similarity = split.getMatchedFaces().get(0).getSimilarity();
-                    } else if (!split.getUnmatchedFaces().isEmpty()) {
-                        similarity = split.getUnmatchedFaces().get(0).getSimilarity();
-                    }
-
-                    if (similarity != null) {
-                        result.put("similarity", similarity);
-                    } else {
-                        result.put("similarity", JSONObject.NULL);
-                    }
-                    callbackContext.success(result);
-                } catch (Exception e) {
-                    callbackContext.error(e.getMessage());
+                    ImageType imageType = intToImageType(imageTypeInt);
+                    imageList.add(new MatchFacesImage(bitmap, imageType, true));
                 }
-            });
-        } catch (Exception e) {
-            callbackContext.error(e.getMessage());
-        }
+
+                MatchFacesRequest matchRequest = new MatchFacesRequest(imageList);
+
+                FaceSDK.Instance().matchFaces(cordova.getContext(), matchRequest, matchFacesResponse -> {
+                    try {
+                        JSONObject result = new JSONObject();
+                        if (matchFacesResponse.getException() != null) {
+                            result.put("error", matchFacesResponse.getException().getMessage());
+                            callbackContext.success(result);
+                            return;
+                        }
+
+                        MatchFacesSimilarityThresholdSplit split =
+                                new MatchFacesSimilarityThresholdSplit(matchFacesResponse.getResults(), 0.75d);
+
+                        Double similarity = null;
+                        if (!split.getMatchedFaces().isEmpty()) {
+                            similarity = split.getMatchedFaces().get(0).getSimilarity();
+                        } else if (!split.getUnmatchedFaces().isEmpty()) {
+                            similarity = split.getUnmatchedFaces().get(0).getSimilarity();
+                        }
+
+                        if (similarity != null) {
+                            result.put("similarity", similarity);
+                        } else {
+                            result.put("similarity", JSONObject.NULL);
+                        }
+                        callbackContext.success(result);
+                    } catch (Exception e) {
+                        callbackContext.error(e.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                callbackContext.error(e.getMessage());
+            }
+        });
     }
 
     private ImageType intToImageType(int type) {
