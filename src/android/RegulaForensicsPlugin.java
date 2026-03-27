@@ -150,6 +150,12 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
                             return;
                         }
 
+                        if (matchFacesResponse.getResults() == null || matchFacesResponse.getResults().isEmpty()) {
+                            result.put("error", "No face match results returned — face may not have been detected in one or both images.");
+                            callbackContext.success(result);
+                            return;
+                        }
+
                         MatchFacesSimilarityThresholdSplit split =
                                 new MatchFacesSimilarityThresholdSplit(matchFacesResponse.getResults(), 0.75d);
 
@@ -160,11 +166,7 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
                             similarity = split.getUnmatchedFaces().get(0).getSimilarity();
                         }
 
-                        if (similarity != null) {
-                            result.put("similarity", similarity);
-                        } else {
-                            result.put("similarity", JSONObject.NULL);
-                        }
+                        result.put("similarity", similarity != null ? similarity : JSONObject.NULL);
                         callbackContext.success(result);
                     } catch (Exception e) {
                         callbackContext.error(e.getMessage());
@@ -192,7 +194,8 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+        // NO_WRAP avoids newlines in the base64 string that can cause issues on JS round-trip
+        return Base64.encodeToString(byteArray, Base64.NO_WRAP);
     }
 }
 
