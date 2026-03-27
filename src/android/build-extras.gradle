@@ -24,4 +24,8 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    // Required by Regula FaceCaptureActivity which uses ViewBinding internally
+    buildFeatures {
+        viewBinding = true
+    }
 }
