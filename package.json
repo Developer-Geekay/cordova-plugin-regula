@@ -1,0 +1,19 @@
+{
+  "name": "cordova-plugin-regula",
+  "version": "1.0.0",
+  "description": "Regula Forensic Plugin for Face SDK, Document Reader",
+  "cordova": {
+    "id": "cordova-plugin-regula",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "author": "Gokula Kannan",
+  "license": "ISC"
+}
