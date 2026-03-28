@@ -36,13 +36,14 @@ import com.regula.facesdk.model.results.matchfaces.MatchFacesSimilarityThreshold
 import com.regula.facesdk.request.MatchFacesRequest;
 
 // DetectFaces imports
-import com.regula.facesdk.request.DetectFacesRequest;
-import com.regula.facesdk.configuration.DetectFacesConfiguration;
-import com.regula.facesdk.configuration.OutputImageCrop;
-import com.regula.facesdk.configuration.OutputImageParams;
 import com.regula.facesdk.enums.OutputImageCropAspectRatio;
-import com.regula.facesdk.model.results.detectfaces.DetectFacesResponse;
-import com.regula.facesdk.model.results.detectfaces.DetectFaceResult;
+
+import com.regula.facesdk.detection.request.DetectFacesConfiguration;
+import com.regula.facesdk.detection.request.DetectFacesRequest;
+import com.regula.facesdk.detection.request.OutputImageCrop;
+import com.regula.facesdk.detection.request.OutputImageParams;
+import com.regula.facesdk.detection.response.DetectFaceResult;
+import com.regula.facesdk.detection.response.DetectFacesResponse;
 
 /**
  * RegulaForensicsPlugin — Cordova plugin wrapping the Regula Face SDK.
@@ -82,7 +83,7 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
                 startLiveness(callbackContext);
                 return true;
             case "detectFace":
-                detectFace(callbackContext);
+                detectFace(args, callbackContext);
                 return true;
             case "startFaceCapture":
                 startFaceCapture(callbackContext);
@@ -306,7 +307,7 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
                 // Perform detection on the main thread (SDK constraint)
                 Activity activity = cordova.getActivity();
                 activity.runOnUiThread(() -> {
-                    FaceSDK.Instance().detectFaces(request, detectFacesResponse -> {
+                    FaceSDK.Instance().detectFaces(activity, request, detectFacesResponse -> {
                         try {
                             JSONObject result = new JSONObject();
 
