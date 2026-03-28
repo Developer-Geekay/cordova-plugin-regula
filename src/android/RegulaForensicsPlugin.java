@@ -197,7 +197,7 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
     }
 
     // =========================================================================
-    // STEP 2 / STEP 3 — Liveness / Face Detection
+    // STEP 2 — Liveness
     // =========================================================================
 
     /**
