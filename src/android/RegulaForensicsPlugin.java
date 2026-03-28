@@ -268,45 +268,36 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
                     callbackContext.error("detectFace requires a base64 image string as the first argument.");
                     return;
                 }
-
                 String base64Str = args.getString(0);
-
-                // Strip data-URI prefix if present
-                int commaIdx = base64Str.indexOf(',');
-                if (commaIdx >= 0) {
-                    base64Str = base64Str.substring(commaIdx + 1);
-                }
-
-                // Decode base64 to Bitmap
-                byte[] imageBytes = Base64.decode(base64Str, Base64.DEFAULT);
-                Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-
-                if (bitmap == null) {
-                    callbackContext.error("Failed to decode image. Ensure it is a valid base64 string.");
-                    return;
-                }
-
-                // Setup configuration according to Regula Docs
-                DetectFacesConfiguration configuration = new DetectFacesConfiguration();
-                configuration.setOnlyCentralFace(true);
-
-                // Configure requested output image format/sizing
-                OutputImageCrop outputImageCrop = new OutputImageCrop(
-                        OutputImageCropAspectRatio.OUTPUT_IMAGE_CROP_ASPECT_RATIO_2X3,
-                        new Size(500, 750),
-                        Color.WHITE,
-                        true);
-
-                OutputImageParams outputImageParams = new OutputImageParams(outputImageCrop, Color.WHITE);
-                configuration.setOutputImageParams(outputImageParams);
-
-                // Create the request
-                DetectFacesRequest request = new DetectFacesRequest(bitmap, configuration);
-                request.setTag(UUID.randomUUID().toString());
 
                 // Perform detection on the main thread (SDK constraint)
                 Activity activity = cordova.getActivity();
                 activity.runOnUiThread(() -> {
+
+                    // Decode base64 to Bitmap
+                    byte[] imageBytes = Base64.decode(base64Str, Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+
+                    if (bitmap == null) {
+                        callbackContext.error("Failed to decode image. Ensure it is a valid base64 string.");
+                        return;
+                    }
+
+                    // Setup configuration according to Regula Docs
+                    DetectFacesConfiguration configuration = new DetectFacesConfiguration();
+                    configuration.setOnlyCentralFace(true);
+
+                    // Configure requested output image format/sizing
+                    OutputImageCrop outputImageCrop = new OutputImageCrop(
+                            OutputImageCropAspectRatio.OUTPUT_IMAGE_CROP_ASPECT_RATIO_2X3,
+                            new Size(500, 750),
+                            Color.WHITE,
+                            true);
+
+                    OutputImageParams outputImageParams = new OutputImageParams(outputImageCrop, Color.WHITE);
+                    configuration.setOutputImageParams(outputImageParams);
+                    DetectFacesRequest request = new DetectFacesRequest(bitmap, configuration);
+                    request.setTag(UUID.randomUUID().toString());
                     FaceSDK.Instance().detectFaces(activity, request, detectFacesResponse -> {
                         try {
                             JSONObject result = new JSONObject();
@@ -314,8 +305,7 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
                             if (detectFacesResponse.getError() != null) {
                                 String errMsg = detectFacesResponse.getError().getMessage();
                                 Log.w(TAG, "Detect faces exception: " + errMsg);
-                                result.put("error", errMsg);
-                                callbackContext.success(result);
+                                callbackContext.error("Detect faces exception: " + errMsg);
                                 return;
                             }
 
