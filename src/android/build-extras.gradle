@@ -1,16 +1,14 @@
 repositories {
     google()
     mavenCentral()
-    // flatDir {
-    //     dirs 'libs'
-    // }
 }
 
 dependencies {
     // Direct file implementation (More reliable than flatDir for local AARs)
-    implementation files('src/main/libs/api-8.1.4577.aar')
-    implementation files('src/main/libs/api-9.3.3190.aar')
+    implementation files('src/main/libs/faceapi-8.1.4577.aar')
+    implementation files('src/main/libs/common-9.3.3190.aar')
     implementation files('src/main/libs/basic-8.1.1522.aar')
+    implementation files('src/main/libs/document-9.3.12663.aar')
 
     // These solve the "AAPT: error: attribute... not found" from your previous error
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
