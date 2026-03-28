@@ -11,7 +11,7 @@
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="RegulaForensicsPlugin">
                 <param name="android-package"
-                    value="cordova.plugin.regula.RegulaForensicsPlugin" />
+                    value="com.geekay.plugin.regula.RegulaForensicsPlugin" />
             </feature>
         </config-file>
 
@@ -20,11 +20,12 @@
         <resource-file src="src/android/libs/api-9.3.3190.aar" target="libs/api-9.3.3190.aar" />
         <resource-file src="src/android/res/values/regula_dimens.xml"
             target="res/values/regula_dimens.xml" />
+
         <!-- Important: Use build-extras.gradle to link them -->
         <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
 
         <source-file src="src/android/RegulaForensicsPlugin.java"
-            target-dir="src/cordova.plugin.regula/RegulaForensicsPlugin" />
+            target-dir="src/com/geekay/plugin/regula" />
 
         <resource-file src="regula.license" target="assets/regula.license" />
     </platform>

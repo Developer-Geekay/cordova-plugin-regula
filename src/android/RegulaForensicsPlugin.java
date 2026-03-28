@@ -1,4 +1,4 @@
-package cordova.plugin.regula;
+package com.geekay.plugin.regula;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -88,55 +88,55 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
     }
 
     private void startLiveness(CallbackContext callbackContext) {
-        cordova.getActivity().runOnUiThread(() ->
-            FaceSDK.Instance().startLiveness(cordova.getContext(), livenessResponse -> {
-                try {
-                    JSONObject result = new JSONObject();
-                    if (livenessResponse.getException() != null) {
-                        result.put("error", livenessResponse.getException().getMessage());
-                        callbackContext.success(result);
-                        return;
-                    }
-                    int livenessStatus = (livenessResponse.getLiveness() == com.regula.facesdk.enums.LivenessStatus.PASSED) ? 1 : 0;
-                    result.put("liveness", livenessStatus);
+        cordova.getActivity()
+                .runOnUiThread(() -> FaceSDK.Instance().startLiveness(cordova.getContext(), livenessResponse -> {
+                    try {
+                        JSONObject result = new JSONObject();
+                        if (livenessResponse.getException() != null) {
+                            result.put("error", livenessResponse.getException().getMessage());
+                            callbackContext.success(result);
+                            return;
+                        }
+                        int livenessStatus = (livenessResponse
+                                .getLiveness() == com.regula.facesdk.enums.LivenessStatus.PASSED) ? 1 : 0;
+                        result.put("liveness", livenessStatus);
 
-                    if (livenessResponse.getBitmap() != null) {
-                        String imageId = storeBitmap(livenessResponse.getBitmap());
-                        result.put("imageId", imageId);
-                        result.put("imageType", 2); // LIVE
-                        result.put("image", bitmapToBase64(livenessResponse.getBitmap()));
+                        if (livenessResponse.getBitmap() != null) {
+                            String imageId = storeBitmap(livenessResponse.getBitmap());
+                            result.put("imageId", imageId);
+                            result.put("imageType", 2); // LIVE
+                            result.put("image", bitmapToBase64(livenessResponse.getBitmap()));
+                        }
+                        callbackContext.success(result);
+                    } catch (Exception e) {
+                        callbackContext.error(e.getMessage());
                     }
-                    callbackContext.success(result);
-                } catch (Exception e) {
-                    callbackContext.error(e.getMessage());
-                }
-            })
-        );
+                }));
     }
 
     private void startFaceCapture(CallbackContext callbackContext) {
-        cordova.getActivity().runOnUiThread(() ->
-            FaceSDK.Instance().presentFaceCaptureActivity(cordova.getActivity(), faceCaptureResponse -> {
-                try {
-                    JSONObject result = new JSONObject();
-                    if (faceCaptureResponse.getException() != null) {
-                        result.put("error", faceCaptureResponse.getException().getMessage());
+        cordova.getActivity().runOnUiThread(
+                () -> FaceSDK.Instance().presentFaceCaptureActivity(cordova.getActivity(), faceCaptureResponse -> {
+                    try {
+                        JSONObject result = new JSONObject();
+                        if (faceCaptureResponse.getException() != null) {
+                            result.put("error", faceCaptureResponse.getException().getMessage());
+                            callbackContext.success(result);
+                            return;
+                        }
+                        if (faceCaptureResponse.getImage() != null
+                                && faceCaptureResponse.getImage().getBitmap() != null) {
+                            Bitmap bmp = faceCaptureResponse.getImage().getBitmap();
+                            String imageId = storeBitmap(bmp);
+                            result.put("imageId", imageId);
+                            result.put("imageType", 1); // PRINTED
+                            result.put("image", bitmapToBase64(bmp));
+                        }
                         callbackContext.success(result);
-                        return;
+                    } catch (Exception e) {
+                        callbackContext.error(e.getMessage());
                     }
-                    if (faceCaptureResponse.getImage() != null && faceCaptureResponse.getImage().getBitmap() != null) {
-                        Bitmap bmp = faceCaptureResponse.getImage().getBitmap();
-                        String imageId = storeBitmap(bmp);
-                        result.put("imageId", imageId);
-                        result.put("imageType", 1); // PRINTED
-                        result.put("image", bitmapToBase64(bmp));
-                    }
-                    callbackContext.success(result);
-                } catch (Exception e) {
-                    callbackContext.error(e.getMessage());
-                }
-            })
-        );
+                }));
     }
 
     private void matchFaces(JSONArray imagesJson, CallbackContext callbackContext) {
@@ -192,8 +192,8 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
                             return;
                         }
 
-                        MatchFacesSimilarityThresholdSplit split =
-                                new MatchFacesSimilarityThresholdSplit(matchFacesResponse.getResults(), 0.75d);
+                        MatchFacesSimilarityThresholdSplit split = new MatchFacesSimilarityThresholdSplit(
+                                matchFacesResponse.getResults(), 0.75d);
 
                         Double similarity = null;
                         if (!split.getMatchedFaces().isEmpty()) {
@@ -223,13 +223,19 @@ public class RegulaForensicsPlugin extends CordovaPlugin {
 
     private ImageType intToImageType(int type) {
         switch (type) {
-            case 2: return ImageType.LIVE;
-            case 3: return ImageType.RFID;
-            case 4: return ImageType.EXTERNAL;
-            case 5: return ImageType.DOCUMENT_WITH_LIVE;
-            case 6: return ImageType.GHOST_PORTRAIT;
+            case 2:
+                return ImageType.LIVE;
+            case 3:
+                return ImageType.RFID;
+            case 4:
+                return ImageType.EXTERNAL;
+            case 5:
+                return ImageType.DOCUMENT_WITH_LIVE;
+            case 6:
+                return ImageType.GHOST_PORTRAIT;
             case 1:
-            default: return ImageType.PRINTED;
+            default:
+                return ImageType.PRINTED;
         }
     }
 
