@@ -75,9 +75,7 @@ var DocumentReader = {
     }
 };
 
-Regula = {
+module.exports = {
     Face: Face,
     DocumentReader: DocumentReader
-}
-
-module.exports = Regula;
+};
