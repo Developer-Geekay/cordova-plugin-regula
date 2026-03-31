@@ -27,6 +27,8 @@
             target-dir="src/com/geekay/plugin/regula" />
         <source-file src="src/android/DocumentReaderPlugin.java"
             target-dir="src/com/geekay/plugin/regula" />
+        <source-file src="src/android/DocumentReaderResultsConverter.java"
+            target-dir="src/com/geekay/plugin/regula" />
     </platform>
 
 </plugin>

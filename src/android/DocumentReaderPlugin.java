@@ -3,6 +3,7 @@ package com.geekay.plugin.regula;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.nfc.Tag;
 import android.util.Base64;
 import android.util.Log;
 
@@ -30,10 +31,9 @@ import com.regula.documentreader.api.results.DocumentReaderScenario;
 import com.regula.documentreader.api.enums.*;
 import com.regula.documentreader.api.params.DocReaderConfig;
 
-
 public class DocumentReaderPlugin extends CordovaPlugin {
 
-    private static final String TAG = "DocumentReaderPlugin";
+    private static final String TAG = "RegulaPlugin-Doc";
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -92,7 +92,6 @@ public class DocumentReaderPlugin extends CordovaPlugin {
     private void initializeReader(JSONObject configJson, CallbackContext callbackContext) {
         cordova.getActivity().runOnUiThread(() -> {
             try {
-                // Read license from JSON base64 string
                 String licenseBase64 = configJson.optString("license");
                 byte[] license = Base64.decode(licenseBase64, Base64.DEFAULT);
 
@@ -103,7 +102,7 @@ public class DocumentReaderPlugin extends CordovaPlugin {
 
                 DocumentReader.Instance().initializeReader(cordova.getActivity(), config, new IDocumentReaderInitCompletion() {
                     @Override
-                    public void onInitCompleted(boolean success, DocumentReaderException error) { // Fixed Throwable -> DocumentReaderException
+                    public void onInitCompleted(boolean success, DocumentReaderException error) {
                         if (success) {
                             callbackContext.success("Init completed successfully");
                         } else {
@@ -127,7 +126,7 @@ public class DocumentReaderPlugin extends CordovaPlugin {
             }
 
             @Override
-            public void onPrepareCompleted(boolean status, DocumentReaderException error) { // Fixed Throwable -> DocumentReaderException
+            public void onPrepareCompleted(boolean status, DocumentReaderException error) {
                 if (status) {
                     callbackContext.success("Database prepared");
                 } else {
@@ -147,7 +146,7 @@ public class DocumentReaderPlugin extends CordovaPlugin {
             }
 
             @Override
-            public void onPrepareCompleted(boolean status, DocumentReaderException error) { // Fixed Throwable -> DocumentReaderException
+            public void onPrepareCompleted(boolean status, DocumentReaderException error) {
                 if (status) {
                     callbackContext.success("Database auto-updated");
                 } else {
@@ -178,7 +177,6 @@ public class DocumentReaderPlugin extends CordovaPlugin {
     }
 
     private void cancelDBUpdate(CallbackContext callbackContext) {
-        // Fixed: Passed Context (cordova.getActivity()) as an argument
         DocumentReader.Instance().cancelDBUpdate(cordova.getActivity());
         callbackContext.success("Database update cancelled");
     }
@@ -235,10 +233,12 @@ public class DocumentReaderPlugin extends CordovaPlugin {
     private IDocumentReaderCompletion getCompletion(CallbackContext callbackContext) {
         return new IDocumentReaderCompletion() {
             @Override
-            public void onCompleted(int action, DocumentReaderResults results, DocumentReaderException error) { // Fixed Throwable -> DocumentReaderException
+            public void onCompleted(int action, DocumentReaderResults results, DocumentReaderException error) {
                 if (action == DocReaderAction.COMPLETE || action == DocReaderAction.TIMEOUT) {
                     if (results != null) {
-                        callbackContext.success("Processing complete. Implement Results Serialization Here.");
+                        // FIX: Pass cordova context to properly resolve localized string names
+                        Log.i(TAG,results.toString());
+                        callbackContext.success(DocumentReaderResultsConverter.toJSON(results, cordova.getActivity()).toString());
                     } else if (error != null) {
                         callbackContext.error(error.getMessage());
                     }

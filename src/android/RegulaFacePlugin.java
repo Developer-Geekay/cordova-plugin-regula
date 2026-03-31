@@ -61,7 +61,7 @@ import com.regula.facesdk.detection.response.DetectFacesResponse;
  */
 public class RegulaFacePlugin extends CordovaPlugin {
 
-    private static final String TAG = "RegulaPlugin";
+    private static final String TAG = "RegulaPlugin-Face";
 
     // -------------------------------------------------------------------------
     // Action router
