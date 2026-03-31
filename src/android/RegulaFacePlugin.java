@@ -46,7 +46,7 @@ import com.regula.facesdk.detection.response.DetectFaceResult;
 import com.regula.facesdk.detection.response.DetectFacesResponse;
 
 /**
- * RegulaForensicsPlugin — Cordova plugin wrapping the Regula Face SDK.
+ * RegulaFacePlugin — Cordova plugin wrapping the Regula Face SDK.
  *
  * Action routing:
  * initializeFaceSDK — Step 1 : init SDK, optionally with a license file
@@ -59,7 +59,7 @@ import com.regula.facesdk.detection.response.DetectFacesResponse;
  * frontend)
  * deinitializeFaceSDK — housekeeping : stop SDK
  */
-public class RegulaForensicsPlugin extends CordovaPlugin {
+public class RegulaFacePlugin extends CordovaPlugin {
 
     private static final String TAG = "RegulaPlugin";
 
