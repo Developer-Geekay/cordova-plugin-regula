@@ -1,21 +1,43 @@
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
+repositories {
+    google()
+    mavenCentral()
 
-        maven {
-            url "https://maven.regulaforensics.com/RegulaDocumentReader"
-        }
+    maven {
+        url "https://maven.regulaforensics.com/RegulaDocumentReader"
     }
 }
 
 dependencies {
+    // Face SDK
     implementation ('com.regula.face:api:+@aar') {
         transitive = true
     }
-    implementation ('com.regula.face.core:basic:+@aar')
+    // Face SDK Core
+    // implementation ('com.regula.face.core:basic:+@aar')
+    // Face SDK Match
+    implementation ('com.regula.face.core:match:+@aar')
 
+    // Document Reader SDK
+    implementation ('com.regula.documentreader:api:+@aar'){
+        transitive = true
+    }
+    implementation 'com.regula.documentreader.core:fullrfid:+@aar'
+
+    // implementation 'com.regula.documentreader.core:full:+@aar'
+    // implementation 'com.regula.documentreader.core:ocrandmrz:+@aar'
+    // implementation 'com.regula.documentreader.core:mrz:+@aar'
+    // implementation 'com.regula.documentreader.core:barcode:+@aar'
+    // implementation 'com.regula.documentreader.core:fullauthrfid:+@aar'
+    // implementation 'com.regula.documentreader.core:barcodemrz:+@aar'
+    // implementation 'com.regula.documentreader.core:mrzrfid:+@aar'
+    // implementation 'com.regula.documentreader.core:doctype:+@aar'
+    // implementation 'com.regula.documentreader.core:ocrandmrzrfid:+@aar'
+    // implementation 'com.regula.documentreader.core:barcodemrzrfid:+@aar'
+    // implementation 'com.regula.documentreader.core:fullauth:+@aar'
+    // implementation 'com.regula.documentreader.core:bounds:+@aar'
+    // implementation 'com.regula.documentreader.core:rfid:+@aar'
+
+    
     // These solve the "AAPT: error: attribute... not found" from your previous error
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
     implementation "androidx.appcompat:appcompat:1.6.1"
@@ -24,13 +46,16 @@ dependencies {
 
 // This force-enables AAR support in the sub-project
 android {
+
     aaptOptions {
         noCompress 'Regula/faceSdkResource.dat'
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    
     // Required by Regula FaceCaptureActivity which uses ViewBinding internally
     buildFeatures {
         viewBinding = true
