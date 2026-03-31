@@ -1,8 +1,9 @@
 var exec = require('cordova/exec');
 
 var PLUGIN_NAME = 'RegulaFacePlugin';
+var PLUGIN_NAME = 'DocumentReaderPlugin';
 
-var RegulaFace = {
+var Face = {
     initializeFaceSDK: function (licenseBase64, successCallback, errorCallback) {
         exec(successCallback, errorCallback, PLUGIN_NAME, 'initializeFaceSDK', [licenseBase64]);
     },
@@ -27,10 +28,6 @@ var RegulaFace = {
         exec(successCallback, errorCallback, PLUGIN_NAME, 'detectFace', [image]);
     }
 };
-
-module.exports = RegulaFace;
-
-var PLUGIN_NAME = 'DocumentReaderPlugin';
 
 var DocumentReader = {
 
@@ -78,4 +75,9 @@ var DocumentReader = {
     }
 };
 
-module.exports = DocumentReader;
+Regula = {
+    Face: Face,
+    DocumentReader: DocumentReader
+}
+
+module.exports = Regula;

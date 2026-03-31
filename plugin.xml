@@ -13,20 +13,14 @@
                 <param name="android-package"
                     value="com.geekay.plugin.regula.RegulaFacePlugin" />
             </feature>
+            <feature name="DocumentReaderPlugin">
+                <param name="android-package"
+                    value="com.geekay.plugin.regula.DocumentReaderPlugin" />
+            </feature>
         </config-file>
-
-        <!-- <resource-file src="src/android/libs/faceapi-8.1.4577.aar"
-            target="libs/faceapi-8.1.4577.aar" />
-        <resource-file src="src/android/libs/basic-8.1.1522.aar" target="libs/basic-8.1.1522.aar" />
-        <resource-file src="src/android/libs/common-9.3.3190.aar" target="libs/common-9.3.3190.aar" />
-        <resource-file src="src/android/libs/document-9.3.12663.aar"
-            target="libs/document-9.3.12663.aar" /> -->
         <resource-file src="src/android/res/values/regula_dimens.xml"
             target="res/values/regula_dimens.xml" />
 
-        <!-- Important: Use build-extras.gradle to link them -->
-        <!-- <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference"
-        /> -->
         <framework src="src/android/build-deps.gradle" custom="true" type="gradleReference" />
 
         <source-file src="src/android/RegulaFacePlugin.java"
@@ -35,12 +29,4 @@
             target-dir="src/com/geekay/plugin/regula" />
     </platform>
 
-    <!-- <platform name="ios">
-        <config-file parent="/*" target="config.xml">
-            <feature name="RegulaFacePlugin">
-                <param name="ios-package" value="RegulaFacePlugin" />
-            </feature>
-        </config-file>
-        <source-file src="src/ios/RegulaFacePlugin.m" />
-    </platform> -->
 </plugin>

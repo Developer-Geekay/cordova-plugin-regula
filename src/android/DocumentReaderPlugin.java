@@ -1,6 +1,6 @@
-
 package com.geekay.plugin.regula;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -13,21 +13,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 // Regula SDK Imports
 import com.regula.documentreader.api.DocumentReader;
 import com.regula.documentreader.api.completions.ICheckDatabaseUpdate;
 import com.regula.documentreader.api.completions.IDocumentReaderCompletion;
 import com.regula.documentreader.api.completions.IDocumentReaderInitCompletion;
 import com.regula.documentreader.api.completions.IDocumentReaderPrepareCompletion;
-import com.regula.documentreader.api.config.DocReaderConfig;
+import com.regula.documentreader.api.config.*;
 import com.regula.documentreader.api.config.RecognizeConfig;
 import com.regula.documentreader.api.config.ScannerConfig;
 import com.regula.documentreader.api.enums.DocReaderAction;
+import com.regula.documentreader.api.errors.DocumentReaderException; // <-- Added this import
 import com.regula.documentreader.api.results.DocReaderDocumentsDatabase;
 import com.regula.documentreader.api.results.DocumentReaderResults;
 import com.regula.documentreader.api.results.DocumentReaderScenario;
+import com.regula.documentreader.api.enums.*;
+import com.regula.documentreader.api.params.DocReaderConfig;
+
 
 public class DocumentReaderPlugin extends CordovaPlugin {
 
@@ -101,7 +103,7 @@ public class DocumentReaderPlugin extends CordovaPlugin {
 
                 DocumentReader.Instance().initializeReader(cordova.getActivity(), config, new IDocumentReaderInitCompletion() {
                     @Override
-                    public void onInitCompleted(boolean success, Throwable error) {
+                    public void onInitCompleted(boolean success, DocumentReaderException error) { // Fixed Throwable -> DocumentReaderException
                         if (success) {
                             callbackContext.success("Init completed successfully");
                         } else {
@@ -119,14 +121,13 @@ public class DocumentReaderPlugin extends CordovaPlugin {
         DocumentReader.Instance().prepareDatabase(cordova.getActivity(), databaseID, new IDocumentReaderPrepareCompletion() {
             @Override
             public void onPrepareProgressChanged(int progress) {
-                // Keep callback to send progress updates to JS
                 PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, "Progress: " + progress);
                 pluginResult.setKeepCallback(true);
                 callbackContext.sendPluginResult(pluginResult);
             }
 
             @Override
-            public void onPrepareCompleted(boolean status, Throwable error) {
+            public void onPrepareCompleted(boolean status, DocumentReaderException error) { // Fixed Throwable -> DocumentReaderException
                 if (status) {
                     callbackContext.success("Database prepared");
                 } else {
@@ -146,7 +147,7 @@ public class DocumentReaderPlugin extends CordovaPlugin {
             }
 
             @Override
-            public void onPrepareCompleted(boolean status, Throwable error) {
+            public void onPrepareCompleted(boolean status, DocumentReaderException error) { // Fixed Throwable -> DocumentReaderException
                 if (status) {
                     callbackContext.success("Database auto-updated");
                 } else {
@@ -177,7 +178,8 @@ public class DocumentReaderPlugin extends CordovaPlugin {
     }
 
     private void cancelDBUpdate(CallbackContext callbackContext) {
-        DocumentReader.Instance().cancelDBUpdate();
+        // Fixed: Passed Context (cordova.getActivity()) as an argument
+        DocumentReader.Instance().cancelDBUpdate(cordova.getActivity());
         callbackContext.success("Database update cancelled");
     }
 
@@ -230,20 +232,20 @@ public class DocumentReaderPlugin extends CordovaPlugin {
         callbackContext.success("Deinitialized successfully");
     }
 
-    // Helper completion handler mapped to Cordova callback
     private IDocumentReaderCompletion getCompletion(CallbackContext callbackContext) {
         return new IDocumentReaderCompletion() {
             @Override
-            public void onCompleted(int action, DocumentReaderResults results, Throwable error) {
+            public void onCompleted(int action, DocumentReaderResults results, DocumentReaderException error) { // Fixed Throwable -> DocumentReaderException
                 if (action == DocReaderAction.COMPLETE || action == DocReaderAction.TIMEOUT) {
                     if (results != null) {
-                        // Assuming the SDK provides a standard serialization mechanism or you extract needed info
-                        // Here returning an empty response as placeholder to avoid massive manual serialization
-                        // Reference structure: https://docs.regulaforensics.com/develop/doc-reader-sdk/mobile/getting-started/results/android/
                         callbackContext.success("Processing complete. Implement Results Serialization Here.");
                     } else if (error != null) {
                         callbackContext.error(error.getMessage());
                     }
+                } else if (action == DocReaderAction.CANCEL) {
+                    callbackContext.error("Processing cancelled.");
+                } else if (action == DocReaderAction.ERROR) {
+                    callbackContext.error(error != null ? error.getMessage() : "Unknown error occurred.");
                 }
             }
         };
