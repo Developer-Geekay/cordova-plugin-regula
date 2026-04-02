@@ -13,9 +13,9 @@ dependencies {
         transitive = true
     }
     // Face SDK Core
-    // implementation ('com.regula.face.core:basic:+@aar')
+    implementation ('com.regula.face.core:basic:+@aar')
     // Face SDK Match
-    implementation ('com.regula.face.core:match:+@aar')
+    // implementation ('com.regula.face.core:match:+@aar')
 
     // Document Reader SDK
     implementation ('com.regula.documentreader:api:+@aar'){
@@ -47,9 +47,9 @@ dependencies {
 // This force-enables AAR support in the sub-project
 android {
 
-    aaptOptions {
-        noCompress 'Regula/faceSdkResource.dat'
-    }
+    // aaptOptions {
+    //     noCompress 'Regula/faceSdkResource.dat'
+    // }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
